@@ -27,7 +27,7 @@ class FavoriteCategories(models.Model): # 사용자가 선호하는 카테고리
 class FavoriteLectures(models.Model):   # 사용자가 즐겨찾기한 강의
     Favorite_id = models.BigAutoField(primary_key=True)
     user_id = models.ForeignKey(UserData,on_delete=models.CASCADE)
-    lectures = models.ForeignKey(Lecture,on_delete=models.CASCADE)
+    lecture_id = models.ForeignKey(Lecture,on_delete=models.CASCADE)
 
 class FavoritePost(models.Model):   # 사용자가 즐겨찾기한 게시글
     Favorite_id = models.BigAutoField(primary_key=True)
