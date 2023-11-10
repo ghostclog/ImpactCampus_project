@@ -1,5 +1,4 @@
 from django.db import models
-from userApp.models import UserData
 
 class TotalCategories(models.Model):    #카테고리 모음집. 강의나 유저의 카테고리랑은 다름
     category_id = models.IntegerField(primary_key=True)
@@ -31,4 +30,4 @@ class LectureReview(models.Model):  # 강의 리뷰.
     review_star = models.IntegerField()
     review_date = models.DateTimeField()
     lecture_id = models.ForeignKey(LectureInfo,on_delete=models.CASCADE)
-    user_id = models.ForeignKey(UserData,on_delete=models.CASCADE)
+    user_id = models.ForeignKey('userApp.UserData', on_delete=models.CASCADE)       #순환 참고가 발생하여 코드 수정
