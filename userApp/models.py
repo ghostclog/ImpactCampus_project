@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password,check_password
 
 class UserData(models.Model):   # 유저 정보 데이터(기본적으로 제공하는 User테이블을 사용하기에는 해당 사이트에선 닉네임을 사용하지 않기 때문)
     user_id = models.CharField(primary_key=True,max_length=40)  # 유저 아이디 / 기본키
@@ -15,6 +15,5 @@ class UserData(models.Model):   # 유저 정보 데이터(기본적으로 제공
     def __str__(self):  # 해당 모델 객체명 사용시, 사용자 아이디 반환
         return self.user_id
     
-
-
-    
+    def check_password(self, password):
+        return check_password(password, self.password)  # 비밀번호 확인
