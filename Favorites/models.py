@@ -4,7 +4,7 @@ from mainPostApp.models import TotalCategories as Category, LectureInfo as Lectu
 class FavoriteCategories(models.Model): # 사용자가 선호하는 카테고리
     Favorite_id = models.BigAutoField(primary_key=True)
     user_id = models.ForeignKey('userApp.UserData',on_delete=models.CASCADE)
-    category_id = models.ForeignKey(Category,on_delete=models.CASCADE)
+    category_id = models.ForeignKey(Category,on_delete=models.CASCADE,max_length=20)
 
 class FavoriteLectures(models.Model):   # 사용자가 즐겨찾기한 강의
     Favorite_id = models.BigAutoField(primary_key=True)

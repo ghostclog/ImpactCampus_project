@@ -1,8 +1,8 @@
 from django.db import models
 
 class TotalCategories(models.Model):    #카테고리 모음집. 강의나 유저의 카테고리랑은 다름
-    category_id = models.IntegerField(primary_key=True)
-    top_category_code = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True) # 상위 카테고리 존재시.
+    category_id = models.CharField(max_length=20,primary_key=True)
+    top_category_code = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True,max_length=20) # 상위 카테고리 존재시.
     category_name = models.CharField(max_length=20)
     degree = models.IntegerField()  # 해당 컬럼은 1, 2, 3. 이것만 들어갈 예정(최상위 카테고리, 상위 카테고리, 카테고리)
 
@@ -22,7 +22,7 @@ class LectureInfo(models.Model):    # 강의 정보
 class LectureCategories(models.Model):  # 강의의 카테고리 정보
     lecture_category_id = models.BigAutoField(primary_key=True)
     lecture_id = models.ForeignKey(LectureInfo,on_delete=models.CASCADE)
-    category_id = models.ForeignKey(TotalCategories,on_delete=models.CASCADE)
+    category_id = models.ForeignKey(TotalCategories,on_delete=models.CASCADE,max_length=20)
 
 class LectureReview(models.Model):  # 강의 리뷰.
     review_id = models.BigAutoField(primary_key=True)
