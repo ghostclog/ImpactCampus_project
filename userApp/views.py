@@ -1,7 +1,14 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+import random
+
+
+
 from .models import UserData
 from Favorites.models import FavoriteCategories as FavorCategory
+from annouceApp import ForEmailChk
 
 #회원가입
 def regist(request):
@@ -20,7 +27,7 @@ def regist(request):
             user_categories = FavorCategory(user_id = user_id,category_id = cateogry)
             user_categories.save()
 
-        return HttpResponse('회원가입 완료')
+        return JsonResponse({'return_message':'회원가입 성공'})
     
 #로그인
 def login(request):
@@ -39,30 +46,57 @@ def login(request):
 #이메일 보내기    
 def email_send(request):
     if request.method == 'POST':
-        pass
-    #프론트에서 인증하고자하는 이메일을 보낼 경우,
-    #해당 이메일에 인증 번호를 발송함.
-    #그리고, 해당 이메일과 인증 번호를 데이터베이스에 저장
+
+        rand_num = random.random()      # random 라이브러리 가져오기
+        num = int(rand_num*1000000)     # 6자리 랜덤 수 생성
+        chk_num = str(num).zfill(6)     # 만약 비어있는 부분 존재시 0으로 채워주기
+        user_email = request.POST['user_email'] # 사용자 이메일 정보 획득
+
+        email_data = ForEmailChk(chk_num = chk_num, user_email = user_email)   #추후 데이터 체크를 위해 테이블에 저장
+        email_data.save()
+
+        html_mail = render_to_string("send_email.html", {'chk_num': chk_num})    # 발신 이메일 양식에 사용자가 사용할 인증 번호 넣기
+        send_mail(
+                    'Studinfo에서 비밀번호 변경에 대한 인증번호입니다.',        #메일 제목
+                    '1',                #메일 내용(html파일에 의해 실제로 메일에 표현되지 않음)
+                    'lldp0506@naver.com',       #발신인
+                    [user_email],               #수신인
+                    fail_silently=False,
+                    html_message=html_mail      #html내용
+                )
 
 #이메일 인증
 def email_chk(request):
     if request.method == 'POST':
-        pass
-    #프론트에서 이메일과 인증 번호 발송시
-    #데이터베이스에 저장된 이메일과 인증번호 값을 체크
-    #존재한다면 true/아니면 false
+        user_email = request.POST['user_email']     # 사용자 이메일 정보 획득
+        chk_num = request.POST['chk_num']           # 사용자 이메일 정보 획득
+        if ForEmailChk.objects.filter(user_email=user_email, chk_num=chk_num).exists(): #프론트에서 보내준 이메일과 그에 맞는 인증 번호 존재시
+            return JsonResponse({'return_message':'인증 성공'})
+        return JsonResponse({'return_message':'인증 실패'})
+
 
 #아이디 중복 확인
 def id_chk(request):
     if request.method == 'POST':
-        pass
-    #만약 프론트에서 쏴준 아이디가 데이터베이스에 존재하는지 확인
+        user_id = request.POST['user_id']
+        chk = UserData.objects.all()                    # 유저 테이블의 모든 객체를 가져옴
+        if chk.filter(user_id = user_id).exists():      # 아이디 중복 체크
+            return JsonResponse({'chk_message':'아이디 중복입니다.'})
+        return JsonResponse({'chk_message':'아이디 중복이 아닙니다.'})
+
+
 
 #아이디 찾기
 def find_id(request):
     if request.method == 'POST':
-        pass
-    #?? 어캐 할지 아직 모름
+        user_email = request.POST['user_email']
+        chk = UserData.objects.all()
+        if chk.filter(user_email = user_email).exists():
+            user_id = chk.filter(user_email = user_email).values('user_id')
+            return JsonResponse({'chk_message':'이것이 당신의 아이디.'})
+        return JsonResponse({'chk_message':'당신의 아이디. 존재하지 않는다.'})
+        
+    #이메일 입력하면 해당 이메일이 등록? 기록된? 아이디값 반환해주기
 
 #비밀번호 수정
 def ch_password(request):
