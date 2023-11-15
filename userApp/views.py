@@ -1,17 +1,25 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import UserData
+from Favorites.models import FavoriteCategories as FavorCategory
 
 #회원가입
 def regist(request):
     if request.method == 'POST':
+        #유저 정보
         user_id = request.POST['user_id']
         user_pass = request.POST['user_pass']
         user_email = request.POST['user_email']
         user_tier = 10
-
         user = UserData(user_id=user_id, user_pass=user_pass, user_email=user_email, user_tier = user_tier)  # UserData 객체 생성
-        user.save()  # 데이터베이스에 저장 / 해싱도 같이 해줌
+        user.save()  # 유저 정보를 데이터베이스에 저장 / 해싱도 같이 해줌
+
+        #유저의 즐겨찾기 카테고리
+        user_category = request.POST['user_category']
+        for cateogry in user_category:
+            user_categories = FavorCategory(user_id = user_id,category_id = cateogry)
+            user_categories.save()
+
         return HttpResponse('회원가입 완료')
     
 #로그인
