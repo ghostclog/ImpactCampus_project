@@ -16,4 +16,4 @@ class UserData(models.Model):   # 유저 정보 데이터(기본적으로 제공
         return self.user_id
     
     def check_password(self, password):
-        return check_password(password, self.password)  # 비밀번호 확인
+        return check_password(password, self.user_pass)  # 비밀번호 확인
