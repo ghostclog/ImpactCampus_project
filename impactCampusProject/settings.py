@@ -67,9 +67,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'impactcampusdb',
-        'USER': 'root',
+        'USER': 'impactcampus',
         'PASSWORD': '1234',
-        'HOST': 'localhost',
+        'HOST': '14.56.184.42',
         'PORT': '1128',          
     }
 }

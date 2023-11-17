@@ -169,6 +169,11 @@ def rechk_password(request):
 
 #사용자 카테고리 수정
 def edit_category(request):
+    if request.method == 'GET':
+        user_id = request.POST['user_id']
+        user_category = FavorCategory.objects.filter(user_id = user_id).values("category_id")
+        return JsonResponse({'return_message':user_category})
+        
     if request.method == 'POST':
         # 유저 정보 받기
         user_id = request.POST['user_id']
