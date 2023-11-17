@@ -69,7 +69,7 @@ DATABASES = {
         'NAME': 'impactcampusdb',
         'USER': 'impactcampus',
         'PASSWORD': '1234',
-        'HOST': '14.56.184.42',
+        'HOST': 'root',
         'PORT': '1128',          
     }
 }
