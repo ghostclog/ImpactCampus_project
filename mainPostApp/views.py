@@ -1,19 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from django.db.models import Avg
+from datetime import datetime
 
 from .models import TotalCategories, LectureInfo, LectureCategories, LectureReview
 
 
 
 
-#강의 목록
-def lecture_list(request):
-    if request.method == 'POST':
-        pass
-    #(티어, 카테고리, 작성, 찜한 글, 찜한 강의) 반환
-
-#강의 검색 결과
+#강의 검색 결과(비로그인/로그인 두 가지로 나눠짐.)
 def search_lecture(request):
     if request.method == 'POST':
         pass
@@ -73,8 +68,32 @@ def lecture_info(request):
 #강의에 리뷰 작성하기
 def write_review(request):
     if request.method == 'POST':
-        pass
-    #(티어, 카테고리, 작성, 찜한 글, 찜한 강의) 반환
+        #강의 정보
+        lecture_id = request.POST['lecture_id']
+        #강의 평점
+        review_star = request.POST['review_star']
+        #작성자
+        user_id = request.POST['user_id']
+
+        #만약 리뷰 내용이 있는 경우.
+        if 'review_contents' in request.POST:
+            review_contents = request.POST['review_contents']
+            LectureReview.objects.create(
+                lecture_id = lecture_id,
+                review_star = review_star,
+                user_id = user_id,
+                review_contents = review_contents,
+                review_date = datetime.now(),
+                )
+        #리뷰 내용이 없는 경우.
+        else:
+            LectureReview.objects.create(
+                lecture_id = lecture_id,
+                review_star = review_star,
+                user_id = user_id,
+                review_date = datetime.now(),
+                )
+        return JsonResponse({'message':"작성 완료."})
 
 #리뷰 수정
 def edit_review(request):
