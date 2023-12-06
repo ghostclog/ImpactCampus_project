@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.core import serializers
 import random
 
 
@@ -171,7 +172,8 @@ def rechk_password(request):
 def edit_category(request):
     if request.method == 'GET':
         user_id = request.POST['user_id']
-        user_category = FavorCategory.objects.filter(user_id = user_id).values("category_id")
+        user_category_data = FavorCategory.objects.filter(user_id = user_id).values("category_id")
+        user_category = serializers.serialize('json',user_category_data)
         return JsonResponse({'return_message':user_category})
         
     if request.method == 'POST':

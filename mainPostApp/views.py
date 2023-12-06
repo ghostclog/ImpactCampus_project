@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from django.db.models import Avg
 from datetime import datetime
+from django.core import serializers
 
 from .models import TotalCategories, LectureInfo, LectureCategories, LectureReview
 
@@ -23,11 +24,12 @@ def sort_lecture(request):
 #강의 정보 작성 및 정보 저장
 def write_lecture(request):
     if request.method == 'POST':
-        pass
-    #(티어, 카테고리, 작성, 찜한 글, 찜한 강의) 반환
+        
+        LectureInfo.objects.create(
+
+        )
 
 #강의 정보 보기
-from django.core import serializers
 
 def lecture_info(request):
     if request.method == 'POST':
@@ -43,8 +45,8 @@ def lecture_info(request):
                 lecture_category.append(TotalCategories.objects.filter(category_id = i).values('category_name'))
             
             # 강의 리뷰 및 댓글
-            lecture_review = LectureReview.objects.filter(lecture_id= lecture_id)
-            lecture_review = serializers.serialize('json', lecture_review)
+            lecture_review_data = LectureReview.objects.filter(lecture_id= lecture_id)
+            lecture_review = serializers.serialize('json', lecture_review_data)
             
             # 강의 별점
             lecture_star = LectureReview.objects.filter(lecture_id= lecture_id).aggregate(Avg('review_star'))['review_star__avg']
@@ -97,15 +99,44 @@ def write_review(request):
 
 #리뷰 수정
 def edit_review(request):
+    # 수정 버튼 누를때, 리뷰 데이터 보내주기.
+    if request.method == 'GET':
+        # 리뷰 아이디 값 받아주기
+        review_id = request.POST['review_id']
+        # 해당 아이디에 맞는 데이터 추출
+        review_date = LectureCategories.objects.get(review_id = review_id)
+        # 데이터 변환
+        review = serializers.serialize('json',review_date)
+        return JsonResponse({'review':review})
     if request.method == 'POST':
-        pass
-    #(티어, 카테고리, 작성, 찜한 글, 찜한 강의) 반환
+        # 리뷰 아이디 값 받아주기
+        review_id = request.POST['review_id']
+
+        # 해당 아이디에 맞는 데이터 추출
+        review_date = LectureCategories.objects.get(review_id = review_id)
+        review_star = request.POST['review_star']
+
+        #만약 리뷰 내용이 있는 경우.
+        if 'review_contents' in request.POST:
+            review_date.review_contents = request.POST['review_contents']
+            review_date.review_star = review_star
+
+        #리뷰 내용이 없는 경우.
+        else:
+            review_date.review_star = review_star
+        review_date.save()
+        return JsonResponse({'message':"작성 완료."})
+
+
 
 #리뷰 삭제
 def delete_review(request):
     if request.method == 'POST':
-        pass
-    #(티어, 카테고리, 작성, 찜한 글, 찜한 강의) 반환
+        # 리뷰 아이디 값 받아주기
+        review_id = request.POST['review_id']
+        # 해당 아이디에 맞는 데이터 추출
+        review_date = LectureCategories.objects.get(review_id = review_id)
+        review_date.delete()
 
 #리뷰 정렬
 def sort_reivew(request):
