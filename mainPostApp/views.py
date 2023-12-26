@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
-from django.db.models import Avg
+from django.db.models import Avg, Max
 from datetime import datetime
 from django.core import serializers
 
@@ -24,12 +24,23 @@ def sort_lecture(request):
 #강의 정보 작성 및 정보 저장
 def write_lecture(request):
     if request.method == 'POST':
-        
-        LectureInfo.objects.create(
+        lecture_id = LectureInfo.objects.aggregate(Max('lecture_id'))['lecture_id__max']
 
+        LectureInfo.objects.create(
+            lecture_id = lecture_id,
+            lecture_name = request.POST['lecture_name'],
+            appropriate_grade = request.POST['appropriate_grade'],
+            platform = request.POST['platform'],
+            lecture_infomation = request.POST['lecture_infomation'],
         )
 
-#강의 정보 보기
+        categories = request.POST['lecture_name']
+        category_list = [LectureCategories(lecture_id = lecture_id,category_id = category_id) for category_id in categories]
+        LectureCategories.objects.bulk_create(
+            category_list
+        )
+
+
 
 def lecture_info(request):
     if request.method == 'POST':
